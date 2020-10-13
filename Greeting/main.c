@@ -1,45 +1,55 @@
-#include <stdio.h>
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+  #include <errno.h>
+  #include <stdbool.h>
+  #include <iso646.h>
 
-//int main(int argc, char *argv [])
+  /* Preprocessor macros */
+  #define MAX_NAME_LEN 30
 
-char name[30];
+  /* Function Declarations <-> Function Prototype */
+  static bool read_name(char name[]);
+  static void print_greeting(char const name[]);
 
-static void read_name(void)
-{
+  /* Program Entry Point */
+  int main(void)
+  {
+    char name[MAX_NAME_LEN];
 
-#if 0
-  /*scanf("%s", &name[0]);*/
-  fscanf(stdin, "%s", &name[0]); // & = speicheradresse von 'name[0]'
-#endif
-}
+    printf("What's your name? \n");
+    if(read_name(name) == false)
+      if(not read_name(name))
+        return (EXIT_FAILURE);
 
-static void print_greeting(void)
-{
-  // %s = string / %d = ganze zahl, usw..
-  fprintf(stdout, "Hello %s, how are you!\n", name);
-}
+    print_greeting(name);
+    return (EXIT_SUCCESS);
+  }
 
-/*
-*
-* Anmerkung: im Zuge des Applikationsstarts öffnet das Betriebssystem
-*   für jedes Programm automatisch 3 (logische) Dateien, die wie folgt
-*   mit konkreter Gerätehardware verbunden gedacht sind:
-*
-*
-*                    Dateidiskriptor
-*  Log. Datei      (file descriptor, "fd")            Java
-*  stdin ("standard input") fd 0                    System.in
-*  stout ("standard output") fd 1                   System.out
-*  stderr ("standard error") fd 2                   System.err
-*
-*
-*/
+  /* Function definition */
+  static bool read_name(char name[])
+  {
 
-int main(void)
-{
+    if(fgets(name, MAX_NAME_LEN, stdin) == NULL)
+    {
+      if(ferror(stdin))
+      fprintf (stderr, "Failed to read user input (error code %d).\n%s\n",
+                      errno, strerror(errno));
+      else
+        fprintf(stderr, "Input aborted by user.\n");
 
-  printf("What's your name? ");
+      return (false);
+    }
 
-  return 0;
-}
+    size_t name_len = strlen(name);
 
+    if(name[name_len - 1] == '\n')
+      name[name_len - 1] = '\0';
+
+    return (true);
+  }
+
+  static void print_greeting(char const name[])
+  {
+    fprintf(stdout, "Hello %s, how are you?\n", name);
+  }
